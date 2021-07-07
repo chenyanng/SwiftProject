@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
-    @State private var correctNumber = Int.random(in: 0...2)
-    @State private var messageShow: Bool = false
-    @State private var messageTitle: String = ""
-    @State private var grade: Int = 0
+    @State var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
+    @State var correctNumber = Int.random(in: 0...2)
+    @State var grade = 0
+    @State var messageShow = false
+    @State var messageTitle = ""
     
-    func handleTagClick(_ number: Int) {
+    func handleClick(_ number: Int) {
         if number == correctNumber {
-            messageTitle = "答对了！"
+            messageTitle = "答对了"
             grade += 3
         } else {
-            messageTitle = "答错了！"
+            messageTitle = "答错了"
             grade -= 1
         }
         if (grade < 0) {
@@ -27,7 +27,7 @@ struct ContentView: View {
         }
         messageShow = true
     }
-    func handleCancelMessage() {
+    func handleClosed() {
         countries = countries.shuffled()
         correctNumber = Int.random(in: 0...2)
     }
@@ -39,25 +39,27 @@ struct ContentView: View {
             VStack(spacing: 30) {
                 VStack {
                     Text("点击")
-                        .foregroundColor(.white).font(.largeTitle)
+                        .font(.largeTitle)
                         .fontWeight(.black)
+                        .foregroundColor(.white)
                     Text(countries[correctNumber])
                         .foregroundColor(.white)
                 }
-                ForEach(0 ..< 3) { number in
+                ForEach(0..<3) { number in
                     Button(action: {
-                        self.handleTagClick(number)
+                        handleClick(number)
                     }) {
-                        Image(self.countries[number]).renderingMode(.original)
+                        Image(countries[number]).renderingMode(.original)
                     }
                 }
                 Spacer()
-                Text("当前分数：\(grade)").foregroundColor(.white)
+                Text("分数：\(grade)")
+                    .foregroundColor(.white)
             }
         }
         .alert(isPresented: $messageShow) {
-            Alert(title: Text(messageTitle), message: Text("当前分数\(grade)"), dismissButton: .default(Text("继续")) {
-                self.handleCancelMessage()
+            Alert(title: Text(messageTitle), message: Text("当前分数：\(grade)"), dismissButton: .default(Text("确定")) {
+                handleClosed()
             })
         }
     }
